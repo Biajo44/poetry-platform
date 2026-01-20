@@ -1,0 +1,59 @@
+body{
+	box-sizing: border-box;
+}
+
+.poem-container{
+	font-family: 'Crimson Text', Georgia, serif;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background-color: rgba(30, 41, 59, 0.25);
+    border: none;
+    box-shadow: none;
+}
+
+.poem-title{
+	font-family: 'Playfair Display', Georgia, serif;
+}
+
+.cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.2em;
+    background-color: currentColor;
+    margin-left: 2px;
+    animation: blink 0.8s infinite;
+    vertical-align: text-bottom;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+    }
+    
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+    
+.fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+    
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+    
+.floating {
+    animation: float 6s ease-in-out infinite;
+}
+    
+.progress-bar {
+    transition: width 0.1s linear;
+}
+    
+.feather-icon {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+
