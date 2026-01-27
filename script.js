@@ -1,328 +1,394 @@
-const poems=[
-	{
-		title: "Harmonia Celestial",
-		author: "Anônimo",
-		content: `Nos raios do sol, tua beleza resplandece,
-		Uma musa divina, que aos meus olhos aquece.
-		Com um sorriso gentil, cativas meu olhar,
-		Tua doçura, um doce mel, que em mim faz brotar.
+let editingPoemId=null;
+let poemToDelete = null;
+let currentTag = "";
 
-		Teus risos são melodias celestiais,
-		Encantando o coração com seus tons angelicais.
-		Teu jeito cativante, uma dança no ar,
-		Faz o mundo inteiro se curvar e te admirar.
+const home=document.getElementById("home");
+const write=document.getElementById("write");
+const community=document.getElementById("community");
+const book=document.getElementById("book");
 
-		Oh, garota adorável, como és especial,
-		Teu encanto é como uma estrela no céu astral.
-		Quero te amar a cada novo amanhecer,
-		Pois em teu amor encontro meu ser florescer.
+const openModal=document.getElementById("open-modal");
+const openList=document.getElementById("open-list");
+const btnBack=document.getElementById("btn-back");
+const btnHome=document.getElementById("btn-home");
+const btnHome2=document.getElementById("btn-home-2");
+const btnBook=document.getElementById("btn-book");
+const btnPublish=document.getElementById("btn-publish");
 
-		Que o universo seja testemunha desse destino.
-
-		Em cada palavra, em cada gesto, em cada olhar,
-		É o amor que nos une, é o amor que nos faz voar.`
-	},
-
-	{
-		title: "Caminho Gelado",
-		author: "Anônimo",
-		content: `No horizonte pálido, a esperança se vai,
-		A marcha é pesada, o fardo é mortal.
-		Sob o céu cortante, a dor é constante,
-		Uma possível vitória se esconde em vão,
-		Soldados em fila, mas sem coração.
-
-		O frio devora, a fome é agonia,
-		Passos vacilantes em chão de armadilhas.
-		Cada sombra avança como um inimigo inteiro,
-		E o tempo parece um algoz derradeiro.
-		Corações de ferro se quebram em prantos,
-		A bravura se perde entre medos e espantos.
-
-		Batalhas perdidas, um grito abafado,
-		A honra se torna um fardo pesado.
-		Quando a noite cai, o terror se instala
-		Na mente das almas que a dor não cala.
-		Um império desmorona sob o peso da dor,
-		E o riso da vitória se torna só clamor.
-
-		Um campo de cinzas onde sonhos murcharam,
-		A glória é mentira que as sombras levaram.
-		A derrota amarga se espalha no ar,
-		E, na frieza da história,
-		Só resta chorar e esperar a morte chegar.`
-	},
-	{
-		title:"Flor Rara do Meu Destino",
-		author: "Anônimo",
-		content:`No jardim da vida, ela é a flor mais rara,
-		Com pétalas de risos que a tristeza não ampara.
-		Com fé inabalável e coragem radiante,
-		Um laço eterno que ne dois corações em destinos.
-
-		Entre páginas de livros, navega em mares profundos,
-		Cada história é m sonho, cada verso, um mundo.
-		Com olhos que brilham, como estrelas a brilhar,
-		Seu olhar encantador faz o tempo parar.
-
-		Sua beleza transcende as artes imortais,
-		Nem Van Gogh com seus girassóis jamais lhe faz iguais.
-		Michelangelo em mármore não consegue captar,
-		A luz que em seu ser ilumina o meu andar.
-
-		Como Da Vinci em sua tela divina,
-		Teu sorriso é a Mona Lisa que ilumina.
-		E em cada traço que o mundo pode ver,
-		É a essência do amor que faz meu coração viver.
-
-		Ao passear sob o sol, seu riso ecoa leve,
-		É como uma melodia que a brisa recebe.
-		As flores que ama são reflexo do seu ser,
-		Colorindo os dias com seu jeito de viver.
-
-		Seu estilo é poesia em forma de olhar,
-		Uma mistura de cores que faz o coração dançar.
-		E quando fala com graça, o mundo se ilumina,
-		Cada palavra é doce como a mais pura sina.
-
-		Eu admiro essa luz que ela traz!
-		Um amor tão sincero que nunca se desfaz.
-		Em cada gesto e sorriso, ela espalha calor,
-		É um abraço do universo, é a essência do amor. `
-	}
-];
+const counter=document.getElementById("counter");
+const titleInput=document.getElementById("title");
+const authorInput=document.getElementById("author");
+const contentInput=document.getElementById("content");
+const errorMsg=document.getElementById("error-msg");
+const openTags=document.getElementById("open-tags");
+const tagsPanel=document.getElementById("tags-panel");
+const tagPreview=document.getElementById("tag-preview");
 
 
-	//* state *//
-
-let currentPoemIndex=0;
-let currentCharIndex=0;
-let isTyping=true;
-let isPaused=false;
-let typingInterval=null;
-let waitTimeout=null;
-let progressInterval=null;
-let progressStartTime=0;
-const TYPING_SPEED=50;
-const WAIT_TIME=5000;
+    // screen change //
+function show(section){
+  [home,write,community,book].forEach(s=>{
+    s.classList.add("opacity-0","pointer-events-none");
+  });
+  section.classList.remove("opacity-0","pointer-events-none");
+}
 
 
-	//* DOM elements *//
-
-const poemTitleEl=document.getElementById('poem-title');
-const poemAuthorEl=document.getElementById('poem-author');
-const poemContentEl=document.getElementById('poem-content');
-const cursorEl=document.getElementById('cursor');
-const indicatorsEl=document.getElementById('poem-indicators');
-const progressBarEl=document.getElementById('progress-bar');
-const currentPoemNumEl=document.getElementById('current-poem-num');
-const totalPoemsEl=document.getElementById('total-poems');
-const pauseBtn=document.getElementById('pause-btn');
-const prevBtn=document.getElementById('prev-btn');
-const nextBtn=document.getElementById('next-btn');
-const pauseIcon=document.getElementById('pause-icon');
-const playIcon=document.getElementById('play-icon');
-const pageTitleEl=document.getElementById('page-title');
+    // navigation //
+openModal.onclick=()=>show(write);
+openList.onclick=()=>{show(community);loadCommunity();}
+btnBack.onclick=()=>show(home);
+btnHome.onclick=()=>show(home);
+btnHome2.onclick=()=>show(write);
+btnBook.onclick=()=>{show(book);loadBook();}
 
 
-	//* default config *//
+    // counter //
+contentInput.addEventListener("input",()=>{
+  const lines=contentInput.value.split("\n").filter(l=>l.trim()!=="");
+  counter.innerText=`✦ ${lines.length}`;
+});
 
-const defaultConfig={
-      page_title: "Versos ao Luar"
-    };
+
+    // keyword //
+contentInput.addEventListener("input", () => {
+  const text = contentInput.value.toLowerCase();
+  const body = document.body;
+
+ body.classList.remove(
+    "from-pink-900","via-rose-900","to-purple-900",
+    "from-slate-900","via-gray-900","to-black",
+    "from-yellow-700","via-orange-700","to-rose-800",
+    "via-purple-950"
+  );
+
+  if (text.includes("amor") || text.includes("beijo")) {
+    body.classList.add("from-pink-900","via-rose-900","to-purple-900");
+  } 
+  else if (text.includes("triste") || text.includes("dor")) {
+    body.classList.add("from-slate-900","via-gray-900","to-black");
+  } 
+  else if (text.includes("sol") || text.includes("luz")) {
+    body.classList.add("from-yellow-700","via-orange-700","to-rose-800");
+  } 
+  else {
+    body.classList.add("from-slate-900","via-purple-950","to-slate-900");
+  }
+});
 
 
-    //* initialize indicators *//
+  // error message //
+  function showError(msg){
+    errorMsg.innerText=msg;
+    errorMsg.classList.remove("opacity-0");
+    errorMsg.classList.add("opacity-100");
 
-    function initIndicators() {
-      indicatorsEl.innerHTML = '';
-      poems.forEach((_, index) => {
-        const dot = document.createElement('button');
-        dot.className = `w-3 h-3 rounded-full transition-all ${index === currentPoemIndex ? 'bg-amber-400 scale-125' : 'bg-slate-600 hover:bg-slate-500'}`;
-        dot.setAttribute('aria-label', `Ir para poema ${index + 1}`);
-        dot.onclick = () => goToPoem(index);
-        indicatorsEl.appendChild(dot);
-      });
-      totalPoemsEl.textContent = poems.length;
+    setTimeout(()=>{
+      errorMsg.classList.remove("opacity-100");
+      errorMsg.classList.add("opacity-0");
+    },3000);
+  }
+
+
+    // tags panel //
+let tagsOpen=false;
+let selectedTags=[];
+
+openTags.onclick=()=>{
+  tagsOpen=!tagsOpen;
+  if (tagsOpen) {
+    tagsPanel.classList.remove("max-h-0","opacity-0");
+    tagsPanel.classList.add("max-h-64","opacity-100");
+  } else {
+    tagsPanel.classList.remove("max-h-64","opacity-100");
+    tagsPanel.classList.add("max-h-0","opacity-0");
+  }
+};
+
+document.querySelectorAll(".tag-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    const tag=btn.dataset.tag;
+    if (selectedTags.includes(tag)) {
+      selectedTags=selectedTags.filter(t=>t!==tag);
+      btn.classList.remove("ring-2","ring-white","scale-110");
+    } else {
+      selectedTags.push(tag);
+      btn.classList.add("ring-2","ring-white","scale-110");
     }
+    renderTagPreview();
+  };
+});
+
+function renderTagPreview(){
+  tagPreview.innerHTML="";
+  selectedTags.forEach(tag=>{
+    const btn=document.querySelector(`.tag-btn[data-tag="${tag}"]`);
+    const span=document.createElement("span");
+    span.innerText="#"+tag;
+    span.className=btn.className+"text-xs px-3 py-1 rounded-xl";
+    tagPreview.appendChild(span);
+  });
+}
+
+    // publish // edit //
+btnPublish.onclick=()=>{
+  const title=titleInput.value.trim();
+  const author=authorInput.value.trim()||"Anônimo";
+  const content=contentInput.value.trim();
+
+  if (!title&&!content) {
+    showError("As estrelas estão vazias... dê vida ao seu poema!✨");
+    return;
+  }
+  if (!title) {
+    showError("Seu poema merece um título brilhante!🌙");
+    return;
+  }
+  if (!content) {
+    showError("O universo do seu poema está em branco... preencha-o com suas palavras!🌟");
+    return;
+  }
+
+  let myPoems=JSON.parse(localStorage.getItem("myPoems"))||[];
+  let communityPoems=JSON.parse(localStorage.getItem("communityPoems"))||[];
+
+  if (editingPoemId) {
+    myPoems=myPoems.map(p=>p.id===editingPoemId ? {...p,title,author,content,tags:selectedTags} : p);
+    communityPoems=communityPoems.map(p=>p.id===editingPoemId ? {...p,title,author,content,tags:selectedTags} : p);
+    editingPoemId=null;
+  } else {
+  const poem={
+    id: Date.now(),
+    title,
+    author,
+    content,
+    tags: selectedTags,
+    date:new Date().toLocaleDateString(),
+    likes:0
+  };
+   myPoems.push(poem);
+    communityPoems.push(poem);
+  }
+  localStorage.setItem("myPoems",JSON.stringify(myPoems));
+  localStorage.setItem("communityPoems",JSON.stringify(communityPoems));
+
+    // to clear //
+  titleInput.value="";
+  authorInput.value="";
+  contentInput.value="";
+  counter.innerText="✦ 0";
+  selectedTags=[];
+  renderTagPreview();
+  
+  show(book);
+  loadBook();
+};
 
 
-    //* update indicators *//
+    // community //
+function loadCommunity(){
+  const list = document.getElementById("community-list");
+  const poems = JSON.parse(localStorage.getItem("communityPoems")) || [];
+  const likedPoems = JSON.parse(localStorage.getItem("likedPoems")) || [];
 
-    function updateIndicators() {
-      const dots = indicatorsEl.children;
-      for (let i = 0; i < dots.length; i++) {
-        dots[i].className = `w-3 h-3 rounded-full transition-all ${i === currentPoemIndex ? 'bg-amber-400 scale-125' : 'bg-slate-600 hover:bg-slate-500'}`;
-      }
-      currentPoemNumEl.textContent = currentPoemIndex + 1;
-    }
+  list.innerHTML = "";
 
+  poems.forEach(p => {
+    const liked = likedPoems.includes(p.id);
 
-    //* start typing effect *//
+    list.innerHTML += `
+      <div class="border-b pb-2">
+        <h3 class="font-bold">${p.title}</h3>
+        <p class="text-sm opacity-70">${p.author} | ${p.date}</p>
+        <p class="mt-2 whitespace-pre-line">${p.content}</p>
+        <div class="flex flex-wrap gap-2 mt-2">
+          ${(p.tags||[]).map(tag=>`<span class="px-2 py-1 text-xs rounded-xl bg-purple-700/40">${tag}</span>`).join("")}
+        </div>
+        <button onclick="likePoem(${p.id})">
+          ${liked ? "❤️" : "🤍"} ${p.likes}
+        </button>
+      </div>
+    `;
+  });       
+}
 
-    function startTyping() {
-      const poem = poems[currentPoemIndex];
-      poemTitleEl.textContent = poem.title;
-      poemAuthorEl.textContent = `— ${poem.author}`;
-      poemContentEl.textContent = '';
-      currentCharIndex = 0;
-      isTyping = true;
-      progressBarEl.style.width = '0%';
+    // filter, search, sort //
+function setTagFilter(tag){
+  currentTag = tag;
+  renderCommunity();
+}
 
-      clearInterval(typingInterval);
-      clearTimeout(waitTimeout);
-      clearInterval(progressInterval);
+function renderCommunity(){
+  const list = document.getElementById("community-list");
+  const poems = JSON.parse(localStorage.getItem("communityPoems")) || [];
+  const likedPoems = JSON.parse(localStorage.getItem("likedPoems")) || [];
+  const search = document.getElementById("search-input").value.toLowerCase();
+  const sort = document.getElementById("sort-select").value;
 
-      if (!isPaused) {
-        typingInterval = setInterval(typeNextChar, TYPING_SPEED);
-      }
-    }
+  let filtered = poems.filter(p => {
+    const matchSearch =
+      p.title.toLowerCase().includes(search) ||
+      p.content.toLowerCase().includes(search);
 
+    const matchTag =
+      currentTag === "" || (p.tags || []).includes(currentTag);
 
-    //* type nest character *//
+    return matchSearch && matchTag;
+  });
 
-     function typeNextChar() {
-      const poem = poems[currentPoemIndex];
-      if (currentCharIndex < poem.content.length) {
-        poemContentEl.textContent += poem.content[currentCharIndex];
-        currentCharIndex++;
+  if (sort === "likes") {
+    filtered.sort((a,b)=> b.likes - a.likes);
+  } else {
+    filtered.sort((a,b)=> b.id - a.id);
+  }
 
+  list.innerHTML = "";
 
-    //* update progress during typing *//
+  filtered.forEach(p=>{
+    const liked = likedPoems.includes(p.id);
+    const preview = p.content.slice(0,120) + "...";
 
-         const typingProgress = (currentCharIndex / poem.content.length) * 50;
-        progressBarEl.style.width = `${typingProgress}%`;
-      } else {
-        clearInterval(typingInterval);
-        isTyping = false;
-        startWaitProgress();
-      }
-    }
+    list.innerHTML += `
+      <div class="border-b pb-3 fade-in">
+        <h3 class="font-bold text-lg">${p.title}</h3>
+        <p class="text-sm opacity-70">${p.author} • ${p.date}</p>
 
+        <p class="mt-2">${preview}</p>
 
-    //* start wait progress after typing *//
+        <div class="flex flex-wrap gap-2 mt-2">
+          ${(p.tags||[]).map(tag=>`
+            <span class="px-2 py-1 text-xs rounded-xl bg-purple-700/40">
+              #${tag}
+            </span>
+          `).join("")}
+        </div>
 
-    function startWaitProgress() {
-      progressStartTime = Date.now();
-      progressBarEl.style.width = '50%';
-      
-      progressInterval = setInterval(() => {
-        if (isPaused) return;
-        
-        const elapsed = Date.now() - progressStartTime;
-        const waitProgress = 50 + (elapsed / WAIT_TIME) * 50;
-        progressBarEl.style.width = `${Math.min(waitProgress, 100)}%`;
-        
-        if (elapsed >= WAIT_TIME) {
-          clearInterval(progressInterval);
-          nextPoem();
-        }
-      }, 50);
-    }
+        <div class="flex justify-between items-center mt-2">
+          <button onclick="openPoem(${p.id})" class="text-purple-400">
+            Ler mais
+          </button>
 
-
-
-    //* go to nest poem *//
-
-     function nextPoem() {
-      currentPoemIndex = (currentPoemIndex + 1) % poems.length;
-      updateIndicators();
-      startTyping();
-    }
-
-
-    //* Go to previous poem *//
-
-    function prevPoem() {
-      currentPoemIndex = (currentPoemIndex - 1 + poems.length) % poems.length;
-      updateIndicators();
-      startTyping();
-    }
-
-
-    //* Go to specific poem *//
-
-    function goToPoem(index) {
-      currentPoemIndex = index;
-      updateIndicators();
-      startTyping();
-    }
+          <button onclick="likePoem(${p.id})">
+            ${liked ? "❤️" : "🤍"} ${p.likes}
+          </button>
+        </div>
+      </div>
+    `;
+  });
+}
 
 
-    //* Toggle pause *//
+function openPoem(id){
+  const poems = JSON.parse(localStorage.getItem("communityPoems")) || [];
+  const poem = poems.find(p=>p.id===id);
+  if(!poem) return;
 
-    function togglePause() {
-      isPaused = !isPaused;
-      pauseIcon.classList.toggle('hidden', isPaused);
-      playIcon.classList.toggle('hidden', !isPaused);
+  document.getElementById("modal-title").innerText = poem.title;
+  document.getElementById("modal-author").innerText = poem.author;
+  document.getElementById("modal-content").innerText = poem.content;
 
-      if (isPaused) {
-        clearInterval(typingInterval);
-        clearInterval(progressInterval);
-      } else {
-        if (isTyping) {
-          typingInterval = setInterval(typeNextChar, TYPING_SPEED);
-        } else {
-          startWaitProgress();
-        }
-      }
-    }
+  const modal = document.getElementById("poem-modal");
+  modal.classList.remove("opacity-0","pointer-events-none");
+}
 
-
-    //* Event listeners *//
-    pauseBtn.addEventListener('click', togglePause);
-    prevBtn.addEventListener('click', prevPoem);
-    nextBtn.addEventListener('click', nextPoem);
+function closePoem(){
+  const modal = document.getElementById("poem-modal");
+  modal.classList.add("opacity-0","pointer-events-none");
+}
 
 
-    //* Keyboard controls *//
+    // my universe //
+function loadBook(){
+  const list=document.getElementById("book-list");
+  const poems=JSON.parse(localStorage.getItem("myPoems"))||[];
+  list.innerHTML="";
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        e.preventDefault();
-        togglePause();
-      } else if (e.key === 'ArrowRight') {
-        nextPoem();
-      } else if (e.key === 'ArrowLeft') {
-        prevPoem();
-      }
-    });
+  poems.forEach(p=>{
+    list.innerHTML+=`
+      <div class="border-b pb-2">
+        <h3 class="font-bold">${p.title}</h3>
+        <p class="text-sm opacity-70">${p.author} | ${p.date}</p>
+        <p class="mt-2 whitespace-pre-line">${p.content}</p>
+        <div class="flex flex-wrap gap-2 mt-2">
+          ${(p.tags||[]).map(tag=>`<span class="px-2 py-1 text-xs rounded-xl bg-purple-700/40">${tag}</span>`).join("")}
+        </div>
+        <div class="flex gap-3 mt-3">
+        <button onclick="editPoem(${p.id})" class="text-blue-400">✏️ Reescrever</button>
+        <button onclick="openDeleteModal(${p.id})" class="text-red-400">🌑 Apagar estrela</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+    // edit poem //
+function editPoem(id){
+  const myPoems=JSON.parse(localStorage.getItem("myPoems"))||[];
+  const poem=myPoems.find(p=>p.id===id);
+
+  if (!poem) return;
+  editingPoemId=id;
+  titleInput.value=poem.title;
+  authorInput.value=poem.author;
+  contentInput.value=poem.content;
+  selectedTags=poem.tags||[];
+  renderTagPreview();
+
+  document.querySelectorAll(".tag-btn").forEach(btn=>{
+    btn.classList.remove("ring-2","ring-white","scale-110");
+    btn.classList.toggle("ring-2",selectedTags.includes(btn.dataset.tag));
+  });
+  show(write);
+}
+
+    // delete poem //
+function openDeleteModal(id){
+  poemToDelete = id;
+  document.getElementById("delete-modal").classList.remove("opacity-0","pointer-events-none");
+}
+
+function closeDeleteModal(){
+   poemToDelete = null;
+  document.getElementById("delete-modal").classList.add("opacity-0","pointer-events-none");
+}
+
+function confirmDeletePoem(){
+  let myPoems = JSON.parse(localStorage.getItem("myPoems")) || [];
+  let communityPoems = JSON.parse(localStorage.getItem("communityPoems")) || [];
+
+  myPoems = myPoems.filter(p => p.id !== poemToDelete);
+  communityPoems = communityPoems.filter(p => p.id !== poemToDelete);
+
+  localStorage.setItem("myPoems", JSON.stringify(myPoems));
+  localStorage.setItem("communityPoems", JSON.stringify(communityPoems));
+
+  closeDeleteModal();
+  loadBook();
+}
 
 
-    //* Element SDK initialization *//
 
-    const elementSdkHandler = {
-      defaultConfig,
-      onConfigChange: async (config) => {
-        pageTitleEl.textContent = config.page_title || defaultConfig.page_title;
-      },
-      mapToCapabilities: (config) => ({
-        recolorables: [],
-        borderables: [],
-        fontEditable: undefined,
-        fontSizeable: undefined
-      }),
-      mapToEditPanelValues: (config) => new Map([
-        ["page_title", config.page_title || defaultConfig.page_title]
-      ])
-    };
+    // likes //
+function likePoem(id) {
+  let poems = JSON.parse(localStorage.getItem("communityPoems")) || [];
+  let myPoems = JSON.parse(localStorage.getItem("myPoems")) || [];
+  let likedPoems = JSON.parse(localStorage.getItem("likedPoems")) || [];
 
+  const index = poems.findIndex(p => p.id === id);
+  if (index === -1) return;
 
-    //* Initialize *//
+  if (likedPoems.includes(id)) {
+    poems[index].likes--;
+    likedPoems = likedPoems.filter(pid => pid !== id);
+  } else {
+    poems[index].likes++;
+    likedPoems.push(id);
+  }
 
-    if (window.elementSdk) {
-      window.elementSdk.init(elementSdkHandler);
-    }
-    
-    initIndicators();
-    startTyping();
+  myPoems=myPoems.map(p=>p.id===id ? {...p,likes:poems[index].likes} : p);
 
-
-
-
-
-
-
-
-
-
+  localStorage.setItem("myPoems", JSON.stringify(myPoems));
+  localStorage.setItem("communityPoems", JSON.stringify(poems));
+  localStorage.setItem("likedPoems", JSON.stringify(likedPoems));
+  loadCommunity();
+}

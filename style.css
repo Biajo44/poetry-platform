@@ -1,18 +1,23 @@
-body{
-	box-sizing: border-box;
+@keyframes floatTitle {
+    0%, 100% {transform: translateY(0);}
+    50% {transform: translateY(-6px);}
 }
 
-.poem-container{
-	font-family: 'Crimson Text', Georgia, serif;
+.poem-container {
+    font-family: 'Crimson Text', Georgia, serif;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     background-color: rgba(30, 41, 59, 0.25);
     border: none;
     box-shadow: none;
+    position: relative;
+    overflow: hidden;
+   
 }
 
-.poem-title{
-	font-family: 'Playfair Display', Georgia, serif;
+
+.poem-title {
+    font-family: 'Playfair Display', Georgia, serif;
 }
 
 .cursor {
@@ -39,6 +44,24 @@ body{
     animation: fadeIn 0.8s ease-out forwards;
 }
     
+@keyframes floatLeft {
+    0%, 100% { transform: translateY(0px) rotate(2deg); }
+    50% { transform: translateY(-8px) rotate(-2deg); }
+}
+@keyframes floatRight {
+    0%, 100% { transform: scaleX(-1) translateY(0px) rotate(2deg); }
+    50% { transform: scaleX(-1) translateY(-8px) rotate(-2deg); }
+}
+
+.pity-left {
+    animation: floatLeft 6s ease-in-out infinite;
+}
+
+.pity-right {
+    transform: scaleX(-1);
+    animation: floatRight 6s ease-in-out infinite;
+}
+
 @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
@@ -47,13 +70,43 @@ body{
 .floating {
     animation: float 6s ease-in-out infinite;
 }
-    
-.progress-bar {
-    transition: width 0.1s linear;
+
+@keyframes twinkle {
+    0%,100% {opacity: 0.2}
+    50% {opacity: 0.6}
+}
+
+.twinkle {
+    animation: twinkle 4s ease-in-out infinite;
+}
+
+@keyframes drift {
+    0%, 100% {transform: translateX(0px);}
+    50% {transform: translateX(10px);}
+}
+
+.drift {
+    animation: drift 8s ease-in-out infinite;
 }
     
 .feather-icon {
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
+
+.tag-filter {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(124,58,237,0.3);
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.tag-filter:hover {
+  background: rgba(124,58,237,0.6);
+}
+
+
+
+
 
 
