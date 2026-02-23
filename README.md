@@ -6,7 +6,7 @@ desenvolvido com **HTML, CSS, JavaScript e Tailwind CSS**.
 
 ## Acesso
 
-🔗 https://biajo44.github.io/estrelas-em-palavras/  
+🔗  https://biajo44.github.io/poetry-platform/  
 (Online via GitHub Pages, ainda sem domínio próprio)
 
 ## Funcionalidades
