@@ -6,8 +6,7 @@ desenvolvido com **HTML, CSS, JavaScript e Tailwind CSS**.
 
 ## Acesso
 
-🔗  https://biajo44.github.io/poetry-platform/  
-(Online via GitHub Pages, ainda sem domínio próprio)
+Ainda sem domínio próprio, pois esta em manutençaõ.
 
 ## Funcionalidades
 
@@ -25,4 +24,4 @@ desenvolvido com **HTML, CSS, JavaScript e Tailwind CSS**.
 
 ## Objetivo
 
-Projeto educacional de front-end para praticar criação de aplicações web
+Projeto educacional de front-end para praticar criação de aplicações web.
