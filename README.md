@@ -6,7 +6,7 @@ desenvolvido com **HTML, CSS, JavaScript e Tailwind CSS**.
 
 ## Acesso
 
-Ainda sem domínio próprio, pois esta em manutençaõ.
+Ainda sem domínio próprio, pois esta em manutenção.
 
 ## Funcionalidades
 
